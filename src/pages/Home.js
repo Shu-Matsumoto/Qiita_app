@@ -11,10 +11,10 @@ const Home = () => {
   const [query, setQuery] = useState();
  const [page, setPage] = useState(1);
 
-  const fetchPosts = async (pageNumber) => {
+  const fetchPosts = async () => {
     try {
       const params = {
-        page: pageNumber,
+        page: page,
         per_page: '20',
         query,
       };
@@ -33,35 +33,9 @@ const Home = () => {
     }
   };
 
-  // 「次へ」ボタンクリックイベントハンドラ
-  const handleOnNext = () => {
-    const toPage = page + 1;
-    // console.log(currentPage);
-    // console.log(toPage);
-    setPage(toPage);
-    fetchPosts(toPage);
-  };
-
-  // 「前へ」ボタンクリックイベントハンドラ
-  const handleOnPrevious = () => {
-    const toPage = page - 1;
-    // console.log(currentPage);
-    // console.log(toPage);
-    setPage(toPage);
-    fetchPosts(toPage);
-  };
-
-  // 「ページ番号N」ボタンクリックイベントハンドラ
-  const handleOnPagePress = (pageNumber) => {
-    //console.log(currentPage);
-    //console.log(pageNumber);
-    setPage(pageNumber);
-    fetchPosts(pageNumber);
-  };
-
   useEffect(() => {
-    fetchPosts(1);
-  }, [query]);
+    fetchPosts();
+  }, [page, query]);
 
   return (
     <Box col>
@@ -76,9 +50,9 @@ const Home = () => {
           ))}
           <Pagination
             currentPage={page}
-            onNext={handleOnNext}
-            onPrevious={handleOnPrevious}
-            onPagePress={handleOnPagePress}
+            onNext={() => setPage(page => page + 1)}
+            onPrevious={() => setPage(page => page - 1)}
+            onPagePress={page => setPage(page)}
             isInfinite={false}
           />
         </Box>
