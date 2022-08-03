@@ -66,7 +66,7 @@ const ColumnItem = props => {
         {!!posts.length && (
           <Pagination
             currentPage={page}
-            isInfinite={false}
+            isInfinite={true}
             onNext={() => setPage(page => page + 1)}
             onPrevious={() => setPage(page => page - 1)}
             onPagePress={page => setPage(page)}
