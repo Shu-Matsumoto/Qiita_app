@@ -2,6 +2,7 @@
   "name": "qiita-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://shu-matsumoto.github.io/Qiita_app",
   "dependencies": {
     "@craco/craco": "^7.0.0-alpha.7",
     "@emotion/react": "^11.9.3",
@@ -25,7 +26,9 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build": "react-scripts build",
+    "postbuild": "cp build/index.html build/404.html"
   },
   "eslintConfig": {
     "extends": [
