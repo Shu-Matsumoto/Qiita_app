@@ -43,11 +43,6 @@ const Home = () => {
         <Box css={header}>
           <Title size="sm">記事一覧</Title>
           <SearchBar onEnterPress={value => setQuery(value)} />
-        </Box>
-        <Box css={postWrapper} col>
-          {posts.map((post, index) => (
-            <PostItem key={index} post={post} margin={32} />
-          ))}
           <Pagination
             currentPage={page}
             onNext={() => setPage(page => page + 1)}
@@ -55,6 +50,11 @@ const Home = () => {
             onPagePress={page => setPage(page)}
             isInfinite={false}
           />
+        </Box>
+        <Box css={postWrapper} col>
+          {posts.map((post, index) => (
+            <PostItem key={index} post={post} margin={32} />
+          ))}
         </Box>
       </Box>
     </Box>

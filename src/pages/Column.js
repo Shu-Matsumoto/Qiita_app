@@ -3,7 +3,8 @@ import {css} from '@emotion/react';
 import {Box} from '../components/atoms';
 import { PlusIcon } from '../assets/icon';
 import ColumnItem from '../components/columns/ColumnItem';
-import { db } from '../firebase';
+import {db, auth} from '../firebase';
+import {onAuthStateChanged} from 'firebase/auth';
 
 import {
 	collection,
@@ -31,7 +32,12 @@ const Column = () => {
           created_at: serverTimestamp(),
         };
         // 追加
-        const columnCollectionRef = collection(db, 'columns');
+        const columnCollectionRef = collection(
+          db,
+          'users',
+          user.uid,
+          'columns',
+        );
         // 追加
         const colmnRef = await addDoc(columnCollectionRef, data);
 
@@ -46,7 +52,12 @@ const Column = () => {
     try {
       if (columns.length) {
         // 3行追加
-        const columnCollectionRef = collection(db, 'columns');
+        const columnCollectionRef = collection(
+          db,
+          'users',
+          user.uid,
+          'columns',
+        );
         const docRef = doc(columnCollectionRef, id);
         await deleteDoc(docRef);
 
@@ -61,7 +72,12 @@ const Column = () => {
   const handleSearch = async (id, query) => {
     try {
       // 3行追加
-      const columnCollectionRef = collection(db, 'columns');
+      const columnCollectionRef = collection(
+          db,
+          'users',
+          user.uid,
+          'columns',
+        );
       const docRef = doc(columnCollectionRef, id);
       await updateDoc(docRef, {query});
 
@@ -75,9 +91,10 @@ const Column = () => {
   };
 
   // DBからカラム情報を取得
-  const getColumnDocs = async () => {
+  const getColumnDocs = async userId => {
     try {
-      const columnCollectionRef = collection(db, 'columns');
+      // 引数で受け取ったuserIdをコレクションの参照に渡す
+      const columnCollectionRef = collection(db, 'users', userId, 'columns');
       const q = query(columnCollectionRef, orderBy('created_at', 'asc'));
       const querySnapshot = await getDocs(q);
 
@@ -98,7 +115,13 @@ const Column = () => {
   };
 
   useEffect(() => {
-    getColumnDocs();
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        setUser(user);
+        getColumnDocs(user.uid);
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   return (

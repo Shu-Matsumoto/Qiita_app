@@ -1,25 +1,51 @@
+import {useState, useEffect} from 'react';
 import {css} from '@emotion/react';
-import { Box, Title } from '../atoms';
-import { NavLink } from 'react-router-dom';
-import * as NaviIcon from '../../assets/icon/navi';
+import {Box, Title, Text} from '../atoms';
+// useNavigationを追加
+import {NavLink, useNavigate} from 'react-router-dom';
+import * as Icon from '../../assets/icon/navi';
+// 追加
+import {onAuthStateChanged} from 'firebase/auth';
+// 追加
+import {auth} from '../../firebase';
+
 
 const Header = () => {
-
+	// 追加
+  const [isLogin, setIsLogin] = useState();
+	// 追加
+  const navigate = useNavigate();
   const ROUTES = [
-  {path: '/', icon: {inActive: NaviIcon.HomeIcon, active: NaviIcon.HomeIconActive}},
-  {
-    path: 'column',
-    icon: {inActive: NaviIcon.ColumnIcon, active: NaviIcon.ColumnIconActive},
-  },
+    {path: '/', icon: {inActive: Icon.HomeIcon, active: Icon.HomeIconActive}},
+    {
+      path: 'column',
+      icon: {inActive: Icon.ColumnIcon, active: Icon.ColumnIconActive},
+    },
   ];
+
+
+	// 追加
+  const logout = async () => {
+    if (window.confirm('ログアウトしますか？')) {
+      await auth.signOut();
+      navigate('/auth');
+    }
+  };
+
+	// 追加
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      user ? setIsLogin(true) : setIsLogin(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <header css={header}>
-      <Box css={container}>
+      <Box css={contaienr}>
         <Title css={logo} size="md">
           Qiita App
         </Title>
-				{/* 追加 */}
         <Box css={navi}>
           {ROUTES.map((route, index) => (
             <NavLink to={route.path} key={index}>
@@ -35,6 +61,14 @@ const Header = () => {
             </NavLink>
           ))}
         </Box>
+				{/* 追加 */}
+        {isLogin && (
+          <Box>
+            <Text css={logoutText} onClick={logout}>
+              ログアウト
+            </Text>
+          </Box>
+        )}
       </Box>
     </header>
   );
@@ -50,7 +84,7 @@ const header = css`
   z-index: 9999;
 `;
 
-const container = css`
+const contaienr = css`
   align-items: flex-end;
   max-width: 1400px;
   margin: 0 auto;
@@ -85,4 +119,10 @@ const border = css`
     height: 3px;
     width: 100%;
   }
+`;
+
+const logoutText = css`
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
 `;
